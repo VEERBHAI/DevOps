@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mongo
+  name: mongo
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_deploy
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      name: mongo_pod
+      labels: 
+        app: mongo
+    spec: 
+      containers:
+        - name: mongo
+          image: mongo
+          ports:
+            - containerPort: 27001
+          volumeMounts:
+            - name: mongo
+              mountPath: /volume
+      volumes: 
+        - name: mongo
+          emptyDir: 
+
+
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: nodejs
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata: 
+      labels:
+        app: nodejs
+    spec:
+      containers:
+        - name: nodejs
+          image: devopsedu/employee
+          ports: 
+            - ContainerPort: 8888
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs
+spec:
+  selector:
+    app: nodejs
+  type: Nodeport
+  ports:
+    - port: 8888
+      targetPort: 8000
+      nodePort: 30005
+...
+
+
+
+          
+      

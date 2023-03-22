@@ -1,0 +1,54 @@
+- name: tomcst playbook
+  become: yes
+  hosts: all
+  tasks:
+    - name: update cache
+      apt: 
+        update_cache: yes
+    - name: install curl
+      apt: 
+        name: curl
+        state: present
+    - name: install default jdk
+      apt: 
+        name: default-jdk
+        state: present
+    - name: add group
+      group: 
+        name: tomcat
+        state: present
+    - name: add user
+      user:
+        name: tomcat
+        shell: /bin/false
+        home: /opt/tomcat
+        group: tomcat
+    - name: download tomcat
+      command: chdir=/home/ubuntu/ curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.73/bin/apache-tomcat-9.0.73.tar.gz
+    - name: create tomcat dir
+      file: 
+        path: /opt/tomcat
+        state: directory
+    - name: install tomcat
+      unarchive:
+        src: /home/ubuntu/apache-tomcat-9.0.73.tar.gz
+        dest: /opt/tomcat
+        extra_opts: [--strip-component=1]
+        remote_src: true
+    - name: dir permission
+      file: 
+        path: /opt/tomcat
+        group: tomcat
+        owner: tomcat
+        mode: g=rx
+        recurse: yes
+    - name: copy tomcat.service
+      copy: tomcat.service
+      dest: /etc/systemd/system
+    - name: daemon reload
+      systemd: daemon reload
+    - name: start tomcat
+      systemd:
+        name: tomcat
+        state: restarted
+        enabled: yes

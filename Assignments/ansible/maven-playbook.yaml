@@ -1,0 +1,19 @@
+- name: maven playbook
+  become: yes
+  hosts: all
+  tasks:
+    - name: add repo
+      ansible.builtin.apt_repository:
+        repo: ppa:webup8team/java
+    - name: update
+      apt: 
+        update_cache: yes
+    - name: maven download
+      command: chdir=/home/ubuntu/ wget https://dlcdn.apache.org/maven/maven-3/3.9.1/binaries/apache-maven-3.9.1-bin.tar.gz
+    - name: extract
+      unarchive:
+        src: /home/ubuntu/apache-maven-3.9.1-bin.tar.gz
+        dest: /home/ubuntu/
+        remote_src: true
+    - name: install maven
+      command: sudo update-alternatives --install /usr/bin/mvn maven /opt/apache-maven-3.9.1/bin/mvn 1001
