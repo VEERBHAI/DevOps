@@ -1,0 +1,5 @@
+<<<<<<< HEAD
+demo
+=======
+demo2
+>>>>>>> branch2
