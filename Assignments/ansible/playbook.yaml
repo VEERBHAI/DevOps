@@ -43,10 +43,12 @@
         mode: g=rx
         recurse: yes
     - name: copy tomcat.service
-      copy: tomcat.service
-      dest: /etc/systemd/system
+      copy: 
+        src: tomcat.service
+        dest: /etc/systemd/system
     - name: daemon reload
-      systemd: daemon reload
+      systemd: 
+        daemon_reload: yes
     - name: start tomcat
       systemd:
         name: tomcat
